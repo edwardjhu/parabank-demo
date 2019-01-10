@@ -1,9 +1,9 @@
 ParaBank Demo <br><br>
 
 <form method="POST">
-    <textarea rows="4" cols="50" name="text">Please type in a sentence.</textarea> <br>
-    Avoid: <input name="avoid"> <br>
-    Include: <input name="include">
+    <textarea rows="4" cols="50" name="text">{{ text }}</textarea> <br>
+    Avoid: <input name="avoid" value="{{ avoid }}"> <br>
+    Include: <input name="include" value="{{ include }}">
     <input type="submit" value="Paraphrase">
 </form>
 

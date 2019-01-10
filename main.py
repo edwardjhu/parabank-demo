@@ -33,7 +33,7 @@ def hello():
 '''
 
 has_init = False
-
+line =  '<hr style="border: 2px solid black;" />'
 @app.route('/')
 def my_form():
     '''
@@ -43,7 +43,7 @@ def my_form():
         print('...Finished')
         has_init = True
     '''
-    return render_template('form.html')
+    return render_template('form.html', text="The quick fox jumped over the lazy dog.", avoid='quick fox|dog', include='leaped')
 
 @app.route('/', methods=['POST'])
 def my_form_post():
@@ -52,7 +52,8 @@ def my_form_post():
     include = request.form['include']
     processed_text = assembleJSON('\t'.join([text, avoid, include]))
     print(processed_text)
-    return render_template('form.html') + '\n' + detok(read_and_translate(translator, processed_text))
+    return render_template('form.html', text=text, avoid=avoid, include=include) + line \
+            + text + '<br>' + '<b>' + detok(read_and_translate(translator, processed_text)) + '</b>'
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
