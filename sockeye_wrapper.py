@@ -29,12 +29,12 @@ from sockeye import data_io
 from sockeye import inference
 from sockeye import utils
 
-def load_translate():
+def load_translate(model_path):
 
     # Seed randomly unless a seed has been passed
     utils.seed_rngs(int(time.time()))
 
-    output_handler = get_output_handler('translation',
+    output_handler = get_output_handler('json',
                                         None,
                                         0.9)
 
@@ -50,7 +50,7 @@ def load_translate():
             max_input_len=None,
             beam_size=20,
             batch_size=1,
-            model_folders=['model'],
+            model_folders=[model_path],
             checkpoints=None,
             softmax_temperature=None,
             max_output_length_num_stds=C.DEFAULT_NUM_STD_MAX_OUTPUT_LENGTH,
@@ -67,7 +67,7 @@ def load_translate():
                                           length_penalty=inference.LengthPenalty(1.0, 0.0),
                                           beam_prune=30,
                                           beam_search_stop=C.BEAM_SEARCH_STOP_ALL,
-                                          nbest_size=1,
+                                          nbest_size=10,
                                           models=models,
                                           source_vocabs=source_vocabs,
                                           target_vocab=target_vocab,
@@ -83,17 +83,19 @@ sent_id = 0
 def make_input(input_line: Optional[str]):
     global sent_id
     sent_id += 1
-    print('sent_id:', sent_id)
+    #print('sent_id:', sent_id)
     return inference.make_input_from_json_string(sentence_id=sent_id, json_string=input_line)
     
 def read_and_translate(translator: inference.Translator,
-                       input_line):
+                       input_line,
+                       nbest_size):
     #for chunk in grouper(make_input(input_line), size=C.CHUNK_SIZE_NO_BATCHING):
-    return translate([make_input(input_line)], translator)
+    return translate([make_input(input_line)], translator, nbest_size)
     
 def translate(trans_inputs: List[inference.TranslatorInput],
-              translator: inference.Translator) -> str:
-    print(trans_inputs)
+              translator: inference.Translator,
+              nbest_size: int) -> str:
+    #print(trans_inputs)
     trans_outputs = translator.translate(trans_inputs)
-    return trans_outputs[0].translation
+    return [trans_outputs[0].nbest_translations[i] for i in range(nbest_size)]
 

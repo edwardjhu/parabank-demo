@@ -1,9 +1,10 @@
-ParaBank Demo <br><br>
+ParaBank Demo (enhanced) <br><br>
 
 <form method="POST">
     <textarea rows="4" cols="50" name="text">{{ text }}</textarea> <br>
     Avoid: <input name="avoid" value="{{ avoid }}"> <br>
-    Include: <input name="include" value="{{ include }}">
+    Include: <input name="include" value="{{ include }}"> <br>
+    No. paraphrases: <input type="range" min="1" max="10" value="{{ nbest }}" class="slider" name="nbest" id="myRange"> <br>
     <input type="submit" value="Paraphrase">
 </form>
 

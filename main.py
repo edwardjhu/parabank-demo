@@ -16,12 +16,13 @@
 import sys
 import os
 from sockeye_wrapper import *
-from flask import Flask, request, render_template
-from model.custom_constraints import assembleJSON
-from model.detok import detok
+from flask import Flask, request, render_template, jsonify
+import logging
+from model_NAACL19.custom_constraints import assembleJSON
+from model_NAACL19.detok import detok
 
 
-translator = load_translate()
+translator = load_translate('model_NAACL19')
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
 app = Flask(__name__)
@@ -43,17 +44,21 @@ def my_form():
         print('...Finished')
         has_init = True
     '''
-    return render_template('form.html', text="The quick fox jumped over the lazy dog.", avoid='quick fox|dog', include='leaped')
+    return render_template('form.html', text="The quick fox jumped over the lazy dog.", avoid='quick fox|dog', include='leaped', nbest=5)
 
 @app.route('/', methods=['POST'])
 def my_form_post():
     text = request.form['text']
     avoid = request.form['avoid']
     include = request.form['include']
+    nbest_size = int(request.form['nbest'])
     processed_text = assembleJSON('\t'.join([text, avoid, include]))
-    print(processed_text)
-    return render_template('form.html', text=text, avoid=avoid, include=include) + line \
-            + text + '<br>' + '<b>' + detok(read_and_translate(translator, processed_text)) + '</b>'
+    result_list = read_and_translate(translator, processed_text, nbest_size=nbest_size)
+    for i in range(len(result_list)):
+        result_list[i] = detok(result_list[i])
+    print('LOG', str({'request': processed_text, 'IP': request.environ['REMOTE_ADDR'], 'output': result_list}))
+    return render_template('form.html', text=text, avoid=avoid, include=include, nbest=nbest_size) + line \
+            + text + '<br>' + '<b>' + '<br>'.join(result_list) + '</b>'
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
