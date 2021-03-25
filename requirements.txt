@@ -23,7 +23,7 @@ openfile==0.0.7
 plac==0.9.6
 portalocker==1.3.0
 preshed==2.0.1
-PyYAML==3.12
+PyYAML==5.4
 regex==2018.1.10
 requests==2.21.0
 six==1.12.0
