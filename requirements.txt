@@ -27,7 +27,7 @@ PyYAML==3.12
 regex==2018.1.10
 requests==2.21.0
 six==1.12.0
-sockeye==1.18.67
+sockeye==2.3.24
 spacy==2.0.18
 subword-nmt==0.3.6
 thinc==6.12.1
